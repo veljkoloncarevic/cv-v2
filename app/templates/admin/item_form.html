@@ -1,0 +1,72 @@
+{% extends "admin/_base.html" %}
+{% block title %}{{ 'Edit item' if item else 'New item' }}{% endblock %}
+
+{% block content %}
+<div class="head">
+  <h1>{{ 'Edit item' if item else 'New item' }}</h1>
+  <p class="muted">in <strong>{{ section.title }}</strong> ({{ section.layout }})</p>
+</div>
+
+<form class="card form" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+  <div class="grid2">
+    <label>Title
+      <input name="title" required value="{{ item.title if item else '' }}"
+             placeholder="{{ 'Paper title' if section.layout == 'publications' else 'Data Scientist' }}">
+    </label>
+    <label>Organisation <span class="muted">(underlined line)</span>
+      <input name="org" value="{{ item.org if item else '' }}" placeholder="Brezna D.O.O Belgrade">
+    </label>
+    <label>Subtitle
+      <input name="subtitle" value="{{ item.subtitle if item else '' }}">
+    </label>
+    <label>Date text <span class="muted">(free form)</span>
+      <input name="date_text" value="{{ item.date_text if item else '' }}"
+             placeholder="October 2023 - present">
+    </label>
+    <label>Badge <span class="muted">(publications)</span>
+      <input name="badge" value="{{ item.badge if item else '' }}" placeholder="Published (M33)">
+    </label>
+    <label>Link URL
+      <input name="link_url" type="url" value="{{ item.link_url if item else '' }}">
+    </label>
+    <label>Group label <span class="muted">(publications — identical labels render under one header)</span>
+      <input name="group_label" value="{{ item.group_label if item else '' }}"
+             placeholder="IcETRAN 2025 — Čačak | IEEE">
+    </label>
+    <label>Sort order <span class="muted">(blank = append)</span>
+      <input name="sort_order" type="number" value="{{ item.sort_order if item else '' }}">
+    </label>
+  </div>
+
+  <label>Description <span class="muted">(one paragraph per line)</span>
+    <textarea name="description" rows="8">{{ item.description if item else '' }}</textarea>
+  </label>
+
+  <div class="grid2">
+    <label>Logo
+      <input name="logo" type="file" accept="image/*">
+      {% if item and item.logo_path %}
+      <img class="thumb" src="{{ url_for('public.upload', filename=item.logo_path) }}" alt="">
+      {% endif %}
+    </label>
+    <label>Group logo <span class="muted">(conference logo, set on the first item of a group)</span>
+      <input name="group_logo" type="file" accept="image/*">
+      {% if item and item.group_logo_path %}
+      <img class="thumb" src="{{ url_for('public.upload', filename=item.group_logo_path) }}" alt="">
+      {% endif %}
+    </label>
+  </div>
+
+  <label class="check">
+    <input type="checkbox" name="is_visible" {{ 'checked' if not item or item.is_visible }}>
+    Visible
+  </label>
+
+  <div class="form__actions">
+    <button class="btn" type="submit">Save item</button>
+    <a class="btn btn--ghost" href="{{ url_for('admin.section_items', section_id=section.id) }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

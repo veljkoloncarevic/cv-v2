@@ -1,0 +1,48 @@
+{% extends "admin/_base.html" %}
+{% block title %}{{ 'Edit page' if page else 'New page' }}{% endblock %}
+
+{% block content %}
+<div class="head"><h1>{{ 'Edit page' if page else 'New page' }}</h1></div>
+
+<form class="card form" method="post">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+  <div class="grid2">
+    <label>Title <span class="muted">(browser tab + &lt;title&gt;)</span>
+      <input name="title" required value="{{ page.title if page else '' }}">
+    </label>
+    <label>Slug <span class="muted">(leave empty for the site root)</span>
+      <input name="slug" value="{{ page.slug if page else '' }}" placeholder="literature">
+    </label>
+    <label>Nav label
+      <input name="nav_label" value="{{ page.nav_label if page else '' }}">
+    </label>
+    <label>Nav icon <span class="muted">(Font Awesome class)</span>
+      <input name="nav_icon" value="{{ page.nav_icon if page else '' }}" placeholder="fa-file-lines">
+    </label>
+    <label>Sort order
+      <input name="sort_order" type="number" value="{{ page.sort_order if page else 0 }}">
+    </label>
+  </div>
+
+  <label>Meta description <span class="muted">(~155 characters, shown in Google results)</span>
+    <textarea name="meta_description" rows="3">{{ page.meta_description if page else '' }}</textarea>
+  </label>
+
+  <div class="checks">
+    <label class="check">
+      <input type="checkbox" name="show_hero" {{ 'checked' if not page or page.show_hero }}>
+      Show hero + contact bar
+    </label>
+    <label class="check">
+      <input type="checkbox" name="is_visible" {{ 'checked' if not page or page.is_visible }}>
+      Visible (published)
+    </label>
+  </div>
+
+  <div class="form__actions">
+    <button class="btn" type="submit">Save page</button>
+    <a class="btn btn--ghost" href="{{ url_for('admin.dashboard') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

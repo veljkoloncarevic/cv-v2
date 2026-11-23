@@ -1,0 +1,143 @@
+/* Admin UI — deliberately plain, mobile-usable, no framework. */
+:root {
+  --navy: #2b2b90;
+  --orange: #e8590c;
+  --ink: #16181d;
+  --muted: #6b7280;
+  --line: #dfe3ea;
+  --bg: #f5f6f9;
+  --danger: #b42318;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a { color: var(--navy); }
+
+/* ---------------------------------------------------------------- topbar */
+.abar {
+  background: #14141c;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem 1.25rem;
+  padding: .6rem clamp(.75rem, 3vw, 2rem);
+}
+.abar__brand { color: #fff; font-weight: 700; text-decoration: none; margin-right: auto; }
+.abar__nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+.abar__nav a { color: #d7dae2; text-decoration: none; }
+.abar__nav a:hover { color: #fff; }
+
+.awrap { max-width: 1100px; margin-inline: auto; padding: clamp(1rem, 3vw, 2rem); }
+
+/* ----------------------------------------------------------------- bits */
+.head {
+  display: flex; flex-wrap: wrap; gap: .75rem 1rem;
+  align-items: center; justify-content: space-between; margin-bottom: 1.25rem;
+}
+.head h1 { margin: 0; font-size: 1.4rem; }
+
+.muted { color: var(--muted); font-size: .88rem; margin: .2rem 0 0; }
+.nowrap { white-space: nowrap; }
+.inline { display: inline; }
+
+.card {
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  padding: clamp(.9rem, 2.5vw, 1.4rem); margin-bottom: 1.25rem;
+}
+.card__head {
+  display: flex; flex-wrap: wrap; gap: .75rem 1rem;
+  align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;
+}
+.card__head h2 { margin: 0; font-size: 1.1rem; }
+
+.row-actions { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+
+.chip {
+  display: inline-block; background: #eef1ff; color: var(--navy);
+  border-radius: 999px; padding: .05rem .55rem; font-size: .75rem; margin-left: .35rem;
+}
+.chip--off { background: #fdecea; color: var(--danger); }
+
+.thumb { max-width: 90px; margin-top: .5rem; border: 1px solid var(--line); border-radius: 6px; }
+.thumb--sm { max-width: 42px; margin: 0; }
+
+/* --------------------------------------------------------------- buttons */
+.btn {
+  display: inline-block; background: var(--navy); color: #fff;
+  border: 1px solid var(--navy); border-radius: 7px;
+  padding: .45rem .9rem; font-size: .88rem; font-weight: 600;
+  text-decoration: none; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.12); }
+.btn--ghost { background: #fff; color: var(--navy); }
+.btn--danger { background: #fff; color: var(--danger); border-color: #f0c2bd; }
+.btn--danger:hover { background: var(--danger); color: #fff; }
+.btn--tiny { padding: .25rem .5rem; font-size: .8rem; }
+
+/* ----------------------------------------------------------------- table */
+.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.tbl th, .tbl td {
+  text-align: left; padding: .55rem .5rem; border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.tbl th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+
+/* ----------------------------------------------------------------- forms */
+.form label { display: block; margin-bottom: 1rem; font-weight: 600; font-size: .88rem; }
+.form label .muted { font-weight: 400; display: inline; }
+
+.form input[type="text"], .form input:not([type]), .form input[type="email"],
+.form input[type="url"], .form input[type="password"], .form input[type="number"],
+.form input[type="date"], .form select, .form textarea {
+  width: 100%; margin-top: .3rem; padding: .5rem .6rem;
+  border: 1px solid var(--line); border-radius: 7px;
+  font: inherit; font-weight: 400; background: #fff;
+}
+.form textarea { resize: vertical; }
+.form input:focus, .form select:focus, .form textarea:focus {
+  outline: 2px solid var(--orange); outline-offset: 1px; border-color: var(--orange);
+}
+
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.25rem; }
+
+.check, .checks label { font-weight: 400; display: flex; align-items: center; gap: .5rem; }
+.checks { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+
+.form__actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+
+/* ---------------------------------------------------------------- flashes */
+.flash { border-radius: 8px; padding: .6rem .8rem; margin: 0 0 1rem; font-size: .9rem; }
+.flash--ok { background: #e7f6ec; color: #11633a; }
+.flash--error { background: #fdecea; color: var(--danger); }
+
+/* ------------------------------------------------------------------ login */
+.login-body { display: grid; place-items: center; min-height: 100vh; }
+.login {
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  padding: 1.75rem; width: min(360px, 92vw);
+}
+.login h1 { margin: 0 0 1rem; font-size: 1.2rem; }
+.login label { display: block; margin-bottom: 1rem; font-size: .88rem; font-weight: 600; }
+.login input {
+  width: 100%; margin-top: .3rem; padding: .55rem .6rem;
+  border: 1px solid var(--line); border-radius: 7px; font: inherit; font-weight: 400;
+}
+.login .btn { width: 100%; text-align: center; }
+
+@media (max-width: 720px) {
+  .grid2 { grid-template-columns: minmax(0, 1fr); }
+  .tbl thead { display: none; }
+  .tbl, .tbl tbody, .tbl tr, .tbl td { display: block; width: 100%; }
+  .tbl tr { border-bottom: 2px solid var(--line); padding: .5rem 0; }
+  .tbl td { border: 0; padding: .2rem 0; }
+}

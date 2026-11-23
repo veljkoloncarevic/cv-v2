@@ -1,0 +1,62 @@
+{% extends "admin/_base.html" %}
+{% block title %}{{ section.title }} — items{% endblock %}
+
+{% block content %}
+<div class="head">
+  <div>
+    <h1>{{ section.title }}</h1>
+    <p class="muted">{{ page.title }} (/{{ page.slug }}) · {{ section.layout }} · {{ section.col }} column</p>
+  </div>
+  <div class="row-actions">
+    <a class="btn" href="{{ url_for('admin.item_form', section_id=section.id) }}">+ New item</a>
+    <a class="btn btn--ghost" href="{{ url_for('admin.section_form', section_id=section.id) }}">Section settings</a>
+    <a class="btn btn--ghost" href="{{ url_for('admin.dashboard') }}">Back</a>
+  </div>
+</div>
+
+<section class="card">
+  {% if items %}
+  <table class="tbl">
+    <thead>
+      <tr><th></th><th>Item</th><th>Date</th>{% if section.layout == 'publications' %}<th>Group</th>{% endif %}<th>Order</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td>
+          {% if it.logo_path %}
+          <img class="thumb thumb--sm" src="{{ url_for('public.upload', filename=it.logo_path) }}" alt="">
+          {% endif %}
+        </td>
+        <td>
+          <strong>{{ it.title }}</strong>
+          {% if not it.is_visible %}<span class="chip chip--off">hidden</span>{% endif %}
+          {% if it.org %}<div class="muted">{{ it.org }}</div>{% endif %}
+          {% if it.badge %}<span class="chip">{{ it.badge }}</span>{% endif %}
+        </td>
+        <td class="nowrap">{{ it.date_text or '—' }}</td>
+        {% if section.layout == 'publications' %}<td>{{ it.group_label or '—' }}</td>{% endif %}
+        <td class="nowrap">
+          <form method="post" action="{{ url_for('admin.item_move', item_id=it.id) }}" class="inline">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+            <button class="btn btn--tiny" name="dir" value="up" title="Move up">↑</button>
+            <button class="btn btn--tiny" name="dir" value="down" title="Move down">↓</button>
+          </form>
+        </td>
+        <td class="nowrap">
+          <a class="btn btn--ghost btn--tiny" href="{{ url_for('admin.item_form', item_id=it.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('admin.item_delete', item_id=it.id) }}" class="inline"
+                onsubmit="return confirm('Delete “{{ it.title }}”? This also removes its uploaded logo.');">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+            <button class="btn btn--danger btn--tiny" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No items yet. Add the first one.</p>
+  {% endif %}
+</section>
+{% endblock %}

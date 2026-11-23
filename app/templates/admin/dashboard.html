@@ -1,0 +1,79 @@
+{% extends "admin/_base.html" %}
+{% block title %}Content{% endblock %}
+
+{% block content %}
+<div class="head">
+  <h1>Content</h1>
+  <a class="btn" href="{{ url_for('admin.page_form') }}">+ New page</a>
+</div>
+
+{% if not profile %}
+<p class="flash flash--error">
+  No profile row yet — <a href="{{ url_for('admin.profile_edit') }}">fill in your profile</a>
+  before the public site will render.
+</p>
+{% endif %}
+
+{% for node in tree %}
+<section class="card">
+  <div class="card__head">
+    <div>
+      <h2>
+        {{ node.page.title }}
+        <span class="chip">/{{ node.page.slug }}</span>
+        {% if not node.page.is_visible %}<span class="chip chip--off">hidden</span>{% endif %}
+      </h2>
+      <p class="muted">{{ node.page.meta_description or 'No meta description — add one for SEO.' }}</p>
+    </div>
+    <div class="row-actions">
+      <a class="btn btn--ghost" href="{{ url_for('admin.page_form', page_id=node.page.id) }}">Edit page</a>
+      <a class="btn btn--ghost" href="{{ url_for('admin.section_form', page_id=node.page.id) }}">+ Section</a>
+      <form method="post" action="{{ url_for('admin.page_delete', page_id=node.page.id) }}"
+            onsubmit="return confirm('Delete this page and every section and item inside it?');">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn btn--danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  {% if node.sections %}
+  <table class="tbl">
+    <thead>
+      <tr><th>Section</th><th>Column</th><th>Layout</th><th>Items</th><th>Order</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for s in node.sections %}
+      <tr>
+        <td>
+          <a href="{{ url_for('admin.section_items', section_id=s.id) }}"><strong>{{ s.title }}</strong></a>
+          {% if not s.is_visible %}<span class="chip chip--off">hidden</span>{% endif %}
+        </td>
+        <td>{{ s.col }}</td>
+        <td>{{ s.layout }}</td>
+        <td>{{ s.item_count }}</td>
+        <td class="nowrap">
+          <form method="post" action="{{ url_for('admin.section_move', section_id=s.id) }}" class="inline">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+            <button class="btn btn--tiny" name="dir" value="up" title="Move up">↑</button>
+            <button class="btn btn--tiny" name="dir" value="down" title="Move down">↓</button>
+          </form>
+        </td>
+        <td class="nowrap">
+          <a class="btn btn--ghost btn--tiny" href="{{ url_for('admin.section_items', section_id=s.id) }}">Items</a>
+          <a class="btn btn--ghost btn--tiny" href="{{ url_for('admin.section_form', section_id=s.id) }}">Edit</a>
+          <form method="post" action="{{ url_for('admin.section_delete', section_id=s.id) }}" class="inline"
+                onsubmit="return confirm('Delete section “{{ s.title }}” and all of its items?');">
+            <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+            <button class="btn btn--danger btn--tiny" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No sections on this page yet.</p>
+  {% endif %}
+</section>
+{% endfor %}
+{% endblock %}

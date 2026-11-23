@@ -1,0 +1,68 @@
+{% extends "admin/_base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="head"><h1>Profile</h1></div>
+
+<form class="card form" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+  <div class="grid2">
+    <label>Full name
+      <input name="full_name" required value="{{ profile.full_name if profile else '' }}">
+    </label>
+    <label>Headline
+      <input name="headline" value="{{ profile.headline if profile else '' }}"
+             placeholder="Data Scientist">
+    </label>
+    <label>Birthdate <span class="muted">(age is computed on render)</span>
+      <input name="birthdate" type="date" value="{{ profile.birthdate if profile else '' }}">
+    </label>
+    <label>Location
+      <input name="location" value="{{ profile.location if profile else '' }}">
+    </label>
+    <label>Email
+      <input name="email" type="email" value="{{ profile.email if profile else '' }}">
+    </label>
+    <label>Phone
+      <input name="phone" value="{{ profile.phone if profile else '' }}">
+    </label>
+    <label>GitHub label
+      <input name="github_label" value="{{ profile.github_label if profile else '' }}">
+    </label>
+    <label>GitHub URL
+      <input name="github_url" type="url" value="{{ profile.github_url if profile else '' }}">
+    </label>
+    <label>LinkedIn label
+      <input name="linkedin_label" value="{{ profile.linkedin_label if profile else '' }}">
+    </label>
+    <label>LinkedIn URL
+      <input name="linkedin_url" type="url" value="{{ profile.linkedin_url if profile else '' }}">
+    </label>
+  </div>
+
+  <label>Bio <span class="muted">(one paragraph per line)</span>
+    <textarea name="bio" rows="8">{{ profile.bio if profile else '' }}</textarea>
+  </label>
+
+  <div class="grid2">
+    <label>Portrait
+      <input name="photo" type="file" accept="image/*">
+      {% if profile and profile.photo_path %}
+      <img class="thumb" src="{{ url_for('public.upload', filename=profile.photo_path) }}" alt="">
+      {% endif %}
+    </label>
+    <label>Resume PDF
+      <input name="pdf" type="file" accept="application/pdf">
+      {% if profile and profile.pdf_path %}
+      <a href="{{ url_for('public.upload', filename=profile.pdf_path) }}" target="_blank"
+         rel="noopener">{{ profile.pdf_path }}</a>
+      {% endif %}
+    </label>
+  </div>
+
+  <div class="form__actions">
+    <button class="btn" type="submit">Save profile</button>
+  </div>
+</form>
+{% endblock %}

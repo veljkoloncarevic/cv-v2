@@ -1,0 +1,61 @@
+{% extends "admin/_base.html" %}
+{% block title %}{{ 'Edit section' if section else 'New section' }}{% endblock %}
+
+{% block content %}
+<div class="head">
+  <h1>{{ 'Edit section' if section else 'New section' }}</h1>
+  <p class="muted">on <strong>{{ page.title }}</strong> (/{{ page.slug }})</p>
+</div>
+
+<form class="card form" method="post">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+  <div class="grid2">
+    <label>Title
+      <input name="title" required value="{{ section.title if section else '' }}"
+             placeholder="Work Experience">
+    </label>
+    <label>Slug <span class="muted">(anchor id, auto-generated if blank)</span>
+      <input name="slug" value="{{ section.slug if section else '' }}">
+    </label>
+
+    <label>Column
+      <select name="col">
+        {% for c in ['left', 'right', 'full'] %}
+        <option value="{{ c }}" {{ 'selected' if section and section.col == c }}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Layout
+      <select name="layout">
+        {% for l, desc in [
+            ('timeline', 'timeline — logo, role, org, description, dates'),
+            ('publications', 'publications — grouped links with badges'),
+            ('text', 'text — free paragraphs'),
+            ('tags', 'tags — pill list (skills, tools)')] %}
+        <option value="{{ l }}" {{ 'selected' if section and section.layout == l }}>{{ desc }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Sort order <span class="muted">(blank = append to the end)</span>
+      <input name="sort_order" type="number" value="{{ section.sort_order if section else '' }}">
+    </label>
+  </div>
+
+  <label>Subtitle <span class="muted">(optional, under the heading)</span>
+    <input name="subtitle" value="{{ section.subtitle if section else '' }}">
+  </label>
+
+  <label class="check">
+    <input type="checkbox" name="is_visible" {{ 'checked' if not section or section.is_visible }}>
+    Visible
+  </label>
+
+  <div class="form__actions">
+    <button class="btn" type="submit">Save section</button>
+    <a class="btn btn--ghost" href="{{ url_for('admin.dashboard') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

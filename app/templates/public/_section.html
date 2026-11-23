@@ -1,0 +1,76 @@
+{# Renders one section block. Expects `block` = {section, items} and `group_items`. #}
+{% set s = block.section %}
+<section class="section section--{{ s.layout }}" id="{{ s.slug }}">
+  <h2 class="section__title">{{ s.title }}</h2>
+  {% if s.subtitle %}<p class="section__subtitle">{{ s.subtitle }}</p>{% endif %}
+
+  {% if s.layout == 'publications' %}
+    {% for group in group_items(block['items']) %}
+    <div class="pubgroup">
+      {% if group.label %}
+      <div class="pubgroup__head">
+        {% if group.logo %}
+        <img class="pubgroup__logo" loading="lazy" width="56" height="56"
+             src="{{ url_for('public.upload', filename=group.logo) }}" alt="">
+        {% endif %}
+        <h3 class="pubgroup__label">{{ group.label }}</h3>
+      </div>
+      {% endif %}
+      <ul class="publist">
+        {% for it in group['items'] %}
+        <li class="pub">
+          <p class="pub__title">
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+            {% if it.link_url %}
+            <a href="{{ it.link_url }}" rel="noopener">{{ it.title }}</a>
+            {% else %}{{ it.title }}{% endif %}
+          </p>
+          {% if it.badge or it.date_text %}
+          <p class="pub__meta">
+            {{ it.badge }}{% if it.badge and it.date_text %} — {% endif %}{{ it.date_text }}
+          </p>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+
+  {% elif s.layout == 'tags' %}
+    <ul class="tags">
+      {% for it in block['items'] %}<li class="tag">{{ it.title }}</li>{% endfor %}
+    </ul>
+
+  {% elif s.layout == 'text' %}
+    {% for it in block['items'] %}
+    <div class="textblock">
+      {% if it.title %}<h3 class="entry__title">{{ it.title }}</h3>{% endif %}
+      {% for line in (it.description or '').split('\n') if line.strip() %}
+      <p class="entry__desc">{{ line }}</p>
+      {% endfor %}
+    </div>
+    {% endfor %}
+
+  {% else %}{# timeline #}
+    {% for it in block['items'] %}
+    <article class="entry">
+      {% if it.logo_path %}
+      <img class="entry__logo" loading="lazy" width="56" height="56"
+           src="{{ url_for('public.upload', filename=it.logo_path) }}" alt="">
+      {% endif %}
+      <div class="entry__body">
+        <h3 class="entry__title">{{ it.title }}</h3>
+        {% if it.org %}<p class="entry__org">{{ it.org }}</p>{% endif %}
+        {% if it.subtitle %}<p class="entry__subtitle">{{ it.subtitle }}</p>{% endif %}
+        {% for line in (it.description or '').split('\n') if line.strip() %}
+        <p class="entry__desc">{{ line }}</p>
+        {% endfor %}
+        {% if it.date_text %}<p class="entry__date">{{ it.date_text }}</p>{% endif %}
+        {% if it.link_url %}
+        <p class="entry__link"><a href="{{ it.link_url }}" rel="noopener">More</a></p>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  {% endif %}
+</section>

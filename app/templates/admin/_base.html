@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>{% block title %}Admin{% endblock %} — veljkoloncarevic.in.rs</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+<header class="abar">
+  <a class="abar__brand" href="{{ url_for('admin.dashboard') }}">Site admin</a>
+  <nav class="abar__nav">
+    <a href="{{ url_for('admin.dashboard') }}">Content</a>
+    <a href="{{ url_for('admin.profile_edit') }}">Profile</a>
+    <a href="{{ url_for('public.page', slug='') }}" target="_blank" rel="noopener">View site ↗</a>
+  </nav>
+  <form method="post" action="{{ url_for('auth.logout') }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn btn--ghost" type="submit">Log out</button>
+  </form>
+</header>
+
+<main class="awrap">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}
+      <p class="flash flash--{{ category }}">{{ msg }}</p>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

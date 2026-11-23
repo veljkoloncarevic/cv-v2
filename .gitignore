@@ -1,0 +1,28 @@
+# Local environment — contains real secrets, never commit
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Runtime data: SQLite DB (stores admin password hashes) + uploads
+data/
+*.db
+*.db-wal
+*.db-shm
+backup.db
+data-backup/
+
+# Logs
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

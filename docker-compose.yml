@@ -1,0 +1,23 @@
+services:
+  web:
+    build: .
+    image: veljko-resume:latest
+    container_name: veljko-resume
+    restart: unless-stopped
+    environment:
+      # Generate once: python -c "import secrets; print(secrets.token_hex(32))"
+      SECRET_KEY: ${SECRET_KEY:?set SECRET_KEY in .env}
+      SITE_URL: ${SITE_URL:-https://www.veljkoloncarevic.in.rs}
+      # NPM terminates TLS, so keep this at 1.
+      COOKIE_SECURE: ${COOKIE_SECURE:-1}
+    volumes:
+      - site-data:/data
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  site-data:

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }}{% endblock %}
+{% block description %}{{ page.meta_description or '' }}{% endblock %}
+
+{% block head_extra %}
+<link rel="canonical" href="{{ canonical }}">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="{{ page.title }}">
+<meta property="og:description" content="{{ page.meta_description or '' }}">
+<meta property="og:url" content="{{ canonical }}">
+{% if profile.photo_path %}
+<meta property="og:image" content="{{ config.SITE_URL.rstrip('/') }}{{ url_for('public.upload', filename=profile.photo_path) }}">
+{% endif %}
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{{ jsonld | safe }}</script>
+{% endblock %}
+
+{% block body %}
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <button class="topbar__toggle" type="button" aria-expanded="false"
+            aria-controls="topnav" aria-label="Menu">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
+
+    <nav id="topnav" class="topnav" aria-label="Primary">
+      <ul class="topnav__list">
+        {% for p in nav_pages %}
+        <li>
+          <a href="{{ url_for('public.page', slug=p.slug) }}"
+             {% if p.id == page.id %}aria-current="page"{% endif %}>
+            {% if p.nav_icon %}<i class="fa-solid {{ p.nav_icon }}" aria-hidden="true"></i>{% endif %}
+            <span>{{ p.nav_label or p.title }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    {% if profile.pdf_path %}
+    <a class="btn-pdf" href="{{ url_for('public.upload', filename=profile.pdf_path) }}" download>
+      <i class="fa-solid fa-download" aria-hidden="true"></i> Download PDF version
+    </a>
+    {% endif %}
+  </div>
+</header>
+
+{% if page.show_hero %}
+<section class="hero">
+  <div class="hero__inner">
+    <div class="hero__text">
+      <h1 class="hero__name">{{ profile.full_name }}{% if age %}, {{ age }}{% endif %}</h1>
+      <p class="hero__headline">{{ profile.headline }}</p>
+      <div class="hero__bio">
+        {% for line in (profile.bio or '').split('\n') if line.strip() %}
+        <p>{{ line }}</p>
+        {% endfor %}
+      </div>
+    </div>
+    {% if profile.photo_path %}
+    <img class="hero__photo" width="220" height="220" loading="eager"
+         src="{{ url_for('public.upload', filename=profile.photo_path) }}"
+         alt="Portrait of {{ profile.full_name }}">
+    {% endif %}
+  </div>
+</section>
+
+<div class="contactbar">
+  <ul class="contactbar__list">
+    {% if profile.email %}
+    <li><i class="fa-solid fa-envelope" aria-hidden="true"></i>
+        <a href="mailto:{{ profile.email }}">{{ profile.email }}</a></li>
+    {% endif %}
+    {% if profile.phone %}
+    <li><i class="fa-solid fa-phone" aria-hidden="true"></i>
+        <a href="tel:{{ profile.phone | replace(' ', '') }}">{{ profile.phone }}</a></li>
+    {% endif %}
+    {% if profile.location %}
+    <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i>{{ profile.location }}</li>
+    {% endif %}
+    {% if profile.github_url %}
+    <li><i class="fa-brands fa-github" aria-hidden="true"></i>
+        <a href="{{ profile.github_url }}" rel="me noopener">{{ profile.github_label }}</a></li>
+    {% endif %}
+    {% if profile.linkedin_url %}
+    <li><i class="fa-brands fa-linkedin" aria-hidden="true"></i>
+        <a href="{{ profile.linkedin_url }}" rel="me noopener">{{ profile.linkedin_label }}</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endif %}
+
+<main id="main" class="layout">
+  <div class="layout__col">
+    {% for block in left %}{% include "public/_section.html" %}{% endfor %}
+  </div>
+  <div class="layout__col">
+    {% for block in right %}{% include "public/_section.html" %}{% endfor %}
+  </div>
+  {% if full %}
+  <div class="layout__full">
+    {% for block in full %}{% include "public/_section.html" %}{% endfor %}
+  </div>
+  {% endif %}
+</main>
+
+<footer class="footer">
+  <p>&copy; {{ profile.full_name }}</p>
+</footer>
+{% endblock %}
