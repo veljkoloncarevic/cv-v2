@@ -269,8 +269,9 @@ a { color: var(--blue-link); }
 
 /* ------------------------------------------------------------------ tags -- */
 .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .5rem; }
+/* Same fill as the hero band behind the portrait: navy + white bold text. */
 .tag {
-  background: #eef1ff; color: var(--navy);
+  background: var(--navy); color: #fff; font-weight: 700;
   border-radius: 999px; padding: .3rem .8rem; font-size: var(--fs-small);
 }
 
@@ -327,7 +328,7 @@ a { color: var(--blue-link); }
 /* -------------------------------------------------------------- printing -- */
 @media print {
   .topbar, .footer, .skip-link { display: none !important; }
-  .hero, .contactbar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .hero, .contactbar, .tag { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .layout { grid-template-columns: repeat(2, 1fr); }
   a { text-decoration: none; color: inherit; }
 }
