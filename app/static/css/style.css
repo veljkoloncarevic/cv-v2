@@ -275,6 +275,44 @@ a { color: var(--blue-link); }
   border-radius: 999px; padding: .3rem .8rem; font-size: var(--fs-small);
 }
 
+/* ----------------------------------------------------------------- poems -- */
+.poem {
+  margin: 0 0 clamp(1.25rem, 2.5vw, 2rem);
+  break-inside: avoid;
+}
+
+.poem__title {
+  margin: 0;
+  color: var(--navy);
+  font-size: var(--fs-entry);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Dedication / epigraph — the item's subtitle field. */
+.poem__dedication {
+  margin: .1rem 0 .6rem;
+  color: var(--muted);
+  font-style: italic;
+  font-size: var(--fs-small);
+}
+
+/* `pre-wrap` is what keeps verse intact: hard line breaks, the blank line
+   between stanzas and any leading indentation the poet typed. Deliberately
+   not justified, unlike .entry__desc. Jinja autoescape still applies, so poem
+   text can never inject markup. */
+.poem__body {
+  margin: 0 0 .4rem;
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.poem__meta { margin: 0; color: var(--muted); font-size: var(--fs-small); font-style: italic; }
+
+.poem__link { margin: .3rem 0 0; font-size: var(--fs-small); }
+
 /* ---------------------------------------------------------------- footer -- */
 .footer {
   border-top: 1px solid var(--rule);

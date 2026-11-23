@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS sections (
     subtitle   TEXT,
     col        TEXT NOT NULL DEFAULT 'left' CHECK (col IN ('left', 'right', 'full')),
     layout     TEXT NOT NULL DEFAULT 'timeline'
-               CHECK (layout IN ('timeline', 'publications', 'text', 'tags')),
+               CHECK (layout IN ('timeline', 'publications', 'text', 'tags', 'poems')),
     sort_order INTEGER NOT NULL DEFAULT 0,
     is_visible INTEGER NOT NULL DEFAULT 1,
     UNIQUE (page_id, slug)

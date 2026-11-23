@@ -52,7 +52,11 @@ def _delete_upload(filename):
 
 
 def _form(name, default=""):
-    return (request.form.get(name, default) or "").strip()
+    """Read a text field. Newlines are normalised to LF so verse typed in a
+    Windows browser keeps rendering correctly (and the stored bytes are the
+    same regardless of which machine saved them)."""
+    value = (request.form.get(name, default) or "").strip()
+    return value.replace("\r\n", "\n").replace("\r", "\n")
 
 
 def _checkbox(name):

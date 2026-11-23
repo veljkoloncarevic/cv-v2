@@ -44,7 +44,7 @@ PAGES = [
          meta_description="Work experience, internships and education.", sort_order=20),
     dict(slug="literature", title="Veljko Lončarević | Literature", nav_label="Literature",
          nav_icon="fa-book",
-         meta_description="Published research papers and book chapters in AI/ML.",
+         meta_description="Poems and verse by Veljko Lončarević.",
          sort_order=30),
 ]
 

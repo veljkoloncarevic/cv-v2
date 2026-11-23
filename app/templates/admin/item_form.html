@@ -2,6 +2,7 @@
 {% block title %}{{ 'Edit item' if item else 'New item' }}{% endblock %}
 
 {% block content %}
+{% set title_ph = {'publications': 'Paper title', 'poems': 'Poem title'}.get(section.layout, 'Data Scientist') %}
 <div class="head">
   <h1>{{ 'Edit item' if item else 'New item' }}</h1>
   <p class="muted">in <strong>{{ section.title }}</strong> ({{ section.layout }})</p>
@@ -13,12 +14,12 @@
   <div class="grid2">
     <label>Title
       <input name="title" required value="{{ item.title if item else '' }}"
-             placeholder="{{ 'Paper title' if section.layout == 'publications' else 'Data Scientist' }}">
+             placeholder="{{ title_ph }}">
     </label>
     <label>Organisation <span class="muted">(underlined line)</span>
       <input name="org" value="{{ item.org if item else '' }}" placeholder="Brezna D.O.O Belgrade">
     </label>
-    <label>Subtitle
+    <label>Subtitle{% if section.layout == 'poems' %} <span class="muted">(dedication / epigraph)</span>{% endif %}
       <input name="subtitle" value="{{ item.subtitle if item else '' }}">
     </label>
     <label>Date text <span class="muted">(free form)</span>
@@ -40,8 +41,9 @@
     </label>
   </div>
 
-  <label>Description <span class="muted">(one paragraph per line)</span>
-    <textarea name="description" rows="8">{{ item.description if item else '' }}</textarea>
+  <label>Description
+    <span class="muted">{% if section.layout == 'poems' %}(poem text — line breaks and blank lines between stanzas are kept){% else %}(one paragraph per line){% endif %}</span>
+    <textarea name="description" rows="{{ 16 if section.layout == 'poems' else 8 }}">{{ item.description if item else '' }}</textarea>
   </label>
 
   <div class="grid2">

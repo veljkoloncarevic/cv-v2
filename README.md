@@ -44,6 +44,9 @@ Dockerfile, docker-compose.yml, .env.example
   - `publications` — consecutive items sharing a `group_label` render under one header with
     one conference logo, matching the current IcETRAN / TIE / Infoteh grouping
   - `text` — free paragraphs
+  - `poems` — verse: hard line breaks, the blank line between stanzas and any leading
+    indentation survive (`white-space: pre-wrap`); `title` is the poem title, `description`
+    the verse, `subtitle` an optional dedication, `date_text` e.g. the year
   - `tags` — pill list for skills/tools
 
 ## Run it locally

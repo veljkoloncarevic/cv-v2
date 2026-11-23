@@ -137,6 +137,83 @@ def last_content_change():
 
 
 # --------------------------------------------------------------------------
+# Schema migrations
+# --------------------------------------------------------------------------
+
+# Keep in sync with the `sections` definition in schema.sql. It is duplicated
+# because SQLite cannot widen a CHECK constraint in place — the only supported
+# route is create-copy-drop-rename, which needs the full column list.
+_SECTIONS_DDL = """
+CREATE TABLE {table} (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    page_id    INTEGER NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
+    slug       TEXT NOT NULL,
+    title      TEXT NOT NULL,
+    subtitle   TEXT,
+    col        TEXT NOT NULL DEFAULT 'left' CHECK (col IN ('left', 'right', 'full')),
+    layout     TEXT NOT NULL DEFAULT 'timeline'
+               CHECK (layout IN ('timeline', 'publications', 'text', 'tags', 'poems')),
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    is_visible INTEGER NOT NULL DEFAULT 1,
+    UNIQUE (page_id, slug)
+)
+"""
+
+
+def _sections_create_sql():
+    row = query(
+        "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'sections'",
+        one=True,
+    )
+    return (row[0] if row else "") or ""
+
+
+def migrate_sections_layout():
+    """Widen the `layout` CHECK to include 'poems' on databases created before
+    that layout existed. A no-op on fresh or already-migrated databases.
+
+    Row ids are preserved verbatim because section_items references them; the
+    rebuild runs inside one transaction, with foreign keys suspended so the
+    brief absence of the parent table cannot cascade-delete the children.
+    Returns True when a rebuild actually happened.
+    """
+    if "'poems'" in _sections_create_sql():
+        return False
+
+    db = get_db()
+    db.commit()  # PRAGMA foreign_keys is ignored inside a transaction
+    db.execute("PRAGMA foreign_keys = OFF")
+    try:
+        db.executescript(
+            "BEGIN;\n"
+            + _SECTIONS_DDL.format(table="sections_rebuilt")
+            + ";\n"
+            "INSERT INTO sections_rebuilt (id, page_id, slug, title, subtitle,\n"
+            "                              col, layout, sort_order, is_visible)\n"
+            "     SELECT id, page_id, slug, title, subtitle, col,\n"
+            "            layout, sort_order, is_visible FROM sections;\n"
+            "DROP TABLE sections;\n"
+            "ALTER TABLE sections_rebuilt RENAME TO sections;\n"
+            "CREATE INDEX IF NOT EXISTS idx_sections_page\n"
+            "    ON sections(page_id, sort_order);\n"
+            "COMMIT;\n"
+        )
+    finally:
+        db.execute("PRAGMA foreign_keys = ON")
+
+    # A rename normally carries sqlite_sequence along; make sure the
+    # AUTOINCREMENT counter still belongs to `sections` so new rows never
+    # collide with migrated ids.
+    db.execute("UPDATE sqlite_sequence SET name = 'sections' WHERE name = 'sections_rebuilt'")
+
+    broken = db.execute("PRAGMA foreign_key_check").fetchall()
+    if broken:
+        raise RuntimeError(f"section layout migration broke references: {broken}")
+    db.commit()
+    return True
+
+
+# --------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------
 
@@ -145,6 +222,9 @@ def init_db():
     with current_app.open_resource("schema.sql") as f:
         db.executescript(f.read().decode("utf-8"))
     db.commit()
+    # Bring databases created before the `poems` layout up to date (no-op once done).
+    if migrate_sections_layout():
+        current_app.logger.info("Migrated sections.layout: added the 'poems' layout.")
 
 
 @click.command("init-db")

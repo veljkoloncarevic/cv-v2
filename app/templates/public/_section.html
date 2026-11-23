@@ -41,6 +41,21 @@
       {% for it in block['items'] %}<li class="tag">{{ it.title }}</li>{% endfor %}
     </ul>
 
+  {% elif s.layout == 'poems' %}
+    {% for it in block['items'] %}
+    <article class="poem">
+      <h3 class="poem__title">{{ it.title }}</h3>
+      {% if it.subtitle %}<p class="poem__dedication">{{ it.subtitle }}</p>{% endif %}
+      <div class="poem__body">{{ it.description }}</div>
+      {% if it.date_text or it.badge %}
+      <p class="poem__meta">{{ it.date_text }}{% if it.date_text and it.badge %} · {% endif %}{{ it.badge }}</p>
+      {% endif %}
+      {% if it.link_url %}
+      <p class="poem__link"><a href="{{ it.link_url }}" rel="noopener">Read more</a></p>
+      {% endif %}
+    </article>
+    {% endfor %}
+
   {% elif s.layout == 'text' %}
     {% for it in block['items'] %}
     <div class="textblock">
